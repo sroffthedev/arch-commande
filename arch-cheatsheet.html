@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arch Linux — Cheat Sheet</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #13161d;
+    --surface2: #1a1e28;
+    --border: #252a38;
+    --accent: #ff00ff;
+    --accent2: #00ffff;
+    --garuda: #ff003c;
+    --green: #39d353;
+    --yellow: #e3b341;
+    --red: #f85149;
+    --purple: #bc8cff;
+    --text: #e6edf3;
+    --muted: #7d8590;
+    --code-bg: #161b22;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background grid removed for simplicity */
+
+  /* Header */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  header h1 {
+    font-size: 1rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #fff 0%, var(--accent2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    white-space: nowrap;
+  }
+
+  header p, .logo-row, .badge-row { display: none; }
+
+  .search-wrap {
+    flex-grow: 1;
+    margin: 0;
+    padding: 0;
+  }
+
+  .search-wrap input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 12px 6px 32px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    outline: none;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: 0.8rem;
+    pointer-events: none;
+  }
+
+  /* Layout */
+  main {
+    padding: 16px 12px 40px;
+  }
+
+  /* Section */
+  .section {
+    margin-bottom: 24px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--accent2);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .section-count {
+    font-size: 0.65rem;
+    color: var(--muted);
+  }
+
+  /* Cards grid */
+  .cards {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  /* Card */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px;
+  }
+
+  .card-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+
+  .cmd-emoji { font-size: 0.9rem; }
+  .cmd-label { font-size: 0.8rem; font-weight: 700; }
+  .cmd-desc { font-size: 0.7rem; color: var(--muted); margin-bottom: 6px; line-height: 1.3; }
+
+  .tags { display: none; }
+
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 6px 35px 6px 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: #c9d1d9;
+    line-height: 1.4;
+    position: relative;
+    white-space: pre;
+    overflow-x: auto;
+  }
+
+  .code-block .prompt {
+    color: var(--green);
+    user-select: none;
+    margin-right: 5px;
+  }
+
+  .code-block .sudo-kw { color: var(--yellow); }
+  .code-block .cmd-name { color: var(--accent2); }
+  .code-block .flag { color: var(--purple); }
+  .code-block .arg { color: #ffa657; }
+
+  .copy-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--muted);
+    font-size: 0.6rem;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 1px 5px;
+    cursor: pointer;
+  }
+
+  .copy-btn.copied {
+    color: var(--green);
+    border-color: var(--green);
+  }
+
+  /* No results */
+  .no-results {
+    text-align: center;
+    padding: 60px 24px;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    display: none;
+  }
+
+  /* Footer */
+  footer {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 24px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+  }
+
+  footer span { color: var(--accent); }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .cards { grid-template-columns: 1fr; }
+    header h1 { font-size: 1.8rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Arch & Garuda</h1>
+  <div class="search-wrap">
+    <span class="search-icon">⌕</span>
+    <input type="text" id="search" placeholder="Rechercher..." autocomplete="off" spellcheck="false">
+  </div>
+</header>
+
+<main id="main"></main>
+<div class="no-results" id="noResults">Aucun résultat.</div>
+
+<footer>Cheat Sheet — garuda-update</footer>
+
+<script>
+const data = [
+  {
+    section: "🛠️ Gestion du système",
+    accent: "#1793d1",
+    commands: [
+      {
+        emoji: "🔄",
+        label: "Mettre à jour le système (Garuda)",
+        desc: "La commande recommandée sur Garuda pour mettre à jour les paquets, le système et les dépôts Chaotic-AUR.",
+        code: "garuda-update",
+        tags: ["garuda", "update", "upgrade"],
+        highlight: [
+          { text: "garuda-update", cls: "cmd-name" },
+        ]
+      },
+      {
+        emoji: "📥",
+        label: "Installer un paquet",
+        desc: "Installe un paquet depuis les dépôts officiels. Remplace <package_name> par le nom du paquet.",
+        code: "sudo pacman -S <package_name>",
+        tags: ["pacman", "install"],
+        highlight: [
+          { text: "sudo ", cls: "sudo-kw" },
+          { text: "pacman", cls: "cmd-name" },
+          { text: " -S ", cls: "flag" },
+          { text: "<package_name>", cls: "arg" },
+        ]
+      },
+      {
+        emoji: "🗑️",
+        label: "Supprimer un paquet",
+        desc: "Supprime un paquet installé sans toucher aux dépendances.",
+        code: "sudo pacman -R <package_name>",
+        tags: ["pacman", "remove"],
+        highlight: [
+          { text: "sudo ", cls: "sudo-kw" },
+          { text: "pacman", cls: "cmd-name" },
+          { text: " -R ", cls: "flag" },
+          { text: "<package_name>", cls: "arg" },
+        ]
+      },
+      {
+        emoji: "🧹",
+        label: "Supprimer + dépendances inutiles",
+        desc: "Supprime le paquet ET toutes ses dépendances devenues inutiles, ainsi que les fichiers de config.",
+        code: "sudo pacman -Rns <package_name>",
+        tags: ["pacman", "clean", "remove"],
+        highlight: [
+          { text: "sudo ", cls: "sudo-kw" },
+          { text: "pacman", cls: "cmd-name" },
+          { text: " -Rns ", cls: "flag" },
+          { text: "<package_name>", cls: "arg" },
+        ]
+      },
+      {
+        emoji: "🔍",
+        label: "Chercher un paquet dans les dépôts",
+        desc: "Recherche dans les dépôts officiels un paquet par son nom ou sa description.",
+        code: "pacman -Ss <package_name>",
+        tags: ["pacman", "search"],
+        highlight: [
+          { text: "pacman", cls: "cmd-name" },
+          { text: " -Ss ", cls: "flag" },
+          { text: "<package_name>", cls: "arg" },
+        ]
+      },
+      {
+        emoji: "📃",
+        label: "Lister les paquets installés",
+        desc: "Affiche tous les paquets actuellement installés sur le système.",
+        code: "pacman -Q",
+        tags: ["pacman", "list"],
+        highlight: [
+          { text: "pacman", cls: "cmd-name" },
+          { text: " -Q", cls: "flag" },
+        ]
+      },
+      {
+        emoji: "🧹",
+        label: "Nettoyer le cache des paquets",
+        desc: "Supprime les anciens paquets en cache pour libérer de l'espace disque.",
+        code: "sudo pacman -Sc",
+        tags: ["pacman", "cache", "clean"],
+        highlight: [
+          { text: "sudo ", cls: "sudo-kw" },
+          { text: "pacman", cls: "cmd-name" },
+          { text: " -Sc", cls: "flag" },
+        ]
+      },
+      {
+        emoji: "🗑️",
+        label: "Supprimer les paquets orphelins",
+        desc: "Supprime toutes les dépendances qui ne sont plus nécessaires à aucun paquet.",
+        code: "sudo pacman -Rns $(pacman -Qtdq)",
+        tags: ["pacman", "clean", "orphans"],
+        highlight: [
+          { text: "sudo ", cls: "sudo-kw" },
+          { text: "pacman", cls: "cmd-name" },
+          { text: " -Rns $(pacman -Qtdq)", cls: "flag" },
+        ]
+      },
+    ]
+  },
+  {
+    section: "📦 AUR — Arch User Repository",
+    accent: "#bc8cff",
+    commands: [
+      {
+        emoji: "🌟",
+        label: "Installer yay (helper AUR)",
+        desc: "Clone et compile yay, le helper AUR le plus populaire pour gérer les paquets communautaires.",
+        code: `git clone https://aur.archlinux.org/yay.git
+cd yay
+makepkg -si`,
+        tags: ["yay", "aur", "install"],
+        highlight: null,
+      },
+      {
+        emoji: "📥",
+        label: "Installer un paquet AUR",
+        desc: "Installe un paquet depuis l'AUR (ou les dépôts officiels). yay gère tout automatiquement.",
+        code: "yay -S <package_name>",
+        tags: ["yay", "aur"],
+        highlight: [
+          { text: "yay", cls: "cmd-name" },
+          { text: " -S ", cls: "flag" },
+          { text: "<package_name>", cls: "arg" },
+        ]
+      },
+      {
+        emoji: "🔄",
+        label: "Mettre à jour tous les paquets (AUR inclus)",
+        desc: "Met à jour les paquets officiels ET ceux de l'AUR en une seule commande.",
+        code: "yay -Syu",
+        tags: ["yay", "update"],
+        highlight: [
+          { text: "yay", cls: "cmd-name" },
+          { text: " -Syu", cls: "flag" },
+        ]
+      },
+      {
+        emoji: "🗑️",
+        label: "Supprimer un paquet via yay",
+        desc: "Fonctionne pour les paquets AUR comme pour les paquets officiels.",
+        code: "yay -R <package_name>",
+        tags: ["yay", "remove"],
+        highlight: [
+          { text: "yay", cls: "cmd-name" },
+          { text: " -R ", cls: "flag" },
+          { text: "<package_name>", cls: "arg" },
+        ]
+      },
+    ]
+  },
+  {
+    section: "💾 Système de fichiers & Disques",
+    accent: "#ffa657",
+    commands: [
+      {
+        emoji: "📊",
+        label: "Voir l'espace disque utilisé",
+        desc: "Affiche l'utilisation de chaque partition montée en format lisible par l'humain (Ko, Mo, Go…).",
+        code: "df -h",
+        tags: ["disk", "space"],
+        highlight: [
+          { text: "df", cls: "cmd-name" },
+          { text: " -h", cls: "flag" },
+        ]
+      },
+      {
+        emoji: "🗂️",
+        label: "Taille d'un dossier",
+        desc: "Affiche la taille totale d'un dossier de manière lisible. -s pour le résumé, -h pour l'humain.",
+        code: "du -sh <directory_name>",
+        tags: ["disk", "directory"],
+        highlight: [
+          { text: "du", cls: "cmd-name" },
+          { text: " -sh ", cls: "flag" },
+          { text: "<directory_name>", cls: "arg" },
+        ]
+      },
+      {
+        emoji: "📂",
+        label: "Monter un disque",
+        desc: "Monte un périphérique (partition, clé USB…) dans un dossier du système.",
+        code: "sudo mount /dev/<device_name> /mnt",
+        tags: ["mount", "disk"],
+        highlight: [
+          { text: "sudo ", cls: "sudo-kw" },
+          { text: "mount", cls: "cmd-name" },
+          { text: " /dev/", cls: "" },
+          { text: "<device_name>", cls: "arg" },
+          { text: " /mnt", cls: "" },
+        ]
+      },
+      {
+        emoji: "🚪",
+        label: "Démonter un disque",
+        desc: "Démonte proprement un périphérique avant de le débrancher.",
+        code: "sudo umount /mnt",
+        tags: ["umount", "disk"],
+        highlight: [
+          { text: "sudo ", cls: "sudo-kw" },
+          { text: "umount", cls: "cmd-name" },
+          { text: " /mnt", cls: "" },
+        ]
+      },
+      {
+        emoji: "🛠️",
+        label: "Lister les disques et partitions",
+        desc: "Affiche l'arborescence de tous les périphériques de stockage et leurs partitions.",
+        code: "lsblk",
+        tags: ["lsblk", "disk", "partition"],
+        highlight: [
+          { text: "lsblk", cls: "cmd-name" },
+        ]
+      },
+      {
+        emoji: "✏️",
+        label: "Formater en ext4",
+        desc: "Formate un périphérique avec le système de fichiers ext4. ⚠️ Toutes les données seront perdues.",
+        code: "sudo mkfs.ext4 /dev/<device_name>",
+        tags: ["format", "ext4"],
+        highlight: [
+          { text: "sudo ", cls: "sudo-kw" },
+          { text: "mkfs.ext4", cls: "cmd-name" },
+          { text: " /dev/", cls: "" },
+          { text: "<device_name>", cls: "arg" },
+        ]
+      },
+    ]
+  },
+  {
+    section: "👥 Gestion des utilisateurs",
+    accent: "#39d353",
+    commands: [
+      {
+        emoji: "➕",
+        label: "Ajouter un utilisateur",
+        desc: "Crée un nouvel utilisateur avec son dossier home, l'ajoute au groupe wheel (sudo) et définit bash comme shell.",
+        code: "sudo useradd -m -G wheel -s /bin/bash <username>",
+        tags: ["user", "add"],
+        highlight: [
+          { text: "sudo ", cls: "sudo-kw" },
+          { text: "useradd", cls: "cmd-name" },
+          { text: " -m -G wheel -s /bin/bash ", cls: "flag" },
+          { text: "<username>", cls: "arg" },
+        ]
+      },
+      {
+        emoji: "🔑",
+        label: "Définir un mot de passe",
+        desc: "Définit ou modifie le mot de passe d'un utilisateur.",
+        code: "sudo passwd <username>",
+        tags: ["user", "password"],
+        highlight: [
+          { text: "sudo ", cls: "sudo-kw" },
+          { text: "passwd", cls: "cmd-name" },
+          { text: " <username>", cls: "arg" },
+        ]
+      },
+      {
+        emoji: "🔄",
+        label: "Changer d'utilisateur",
+        desc: "Ouvre une session sous un autre compte utilisateur dans le terminal actuel.",
+        code: "su - <username>",
+        tags: ["user", "switch"],
+        highlight: [
+          { text: "su", cls: "cmd-name" },
+          { text: " - ", cls: "flag" },
+          { text: "<username>", cls: "arg" },
+        ]
+      },
+      {
+        emoji: "❌",
+        label: "Supprimer un utilisateur",
+        desc: "Supprime un utilisateur et son dossier home. -r supprime aussi les fichiers.",
+        code: "sudo userdel -r <username>",
+        tags: ["user", "delete"],
+        highlight: [
+          { text: "sudo ", cls: "sudo-kw" },
+          { text: "userdel", cls: "cmd-name" },
+          { text: " -r ", cls: "flag" },
+          { text: "<username>", cls: "arg" },
+        ]
+      },
+    ]
+  },
+  {
+    section: "🌐 Réseau",
+    accent: "#58a6ff",
+    commands: [
+      {
+        emoji: "📡",
+        label: "Afficher les connexions réseau",
+        desc: "Affiche toutes les interfaces réseau et leurs adresses IP (remplace ifconfig).",
+        code: "ip a",
+        tags: ["network", "ip"],
+        highlight: [
+          { text: "ip", cls: "cmd-name" },
+          { text: " a", cls: "flag" },
+        ]
+      },
+      {
+        emoji: "🔧",
+        label: "Activer / Désactiver une interface",
+        desc: "Active ou désactive une interface réseau (eth0, wlan0…).",
+        code: `sudo ip link set <interface> up
+sudo ip link set <interface> down`,
+        tags: ["network", "interface"],
+        highlight: null,
+      },
+      {
+        emoji: "🛜",
+        label: "Tester la connectivité",
+        desc: "Envoie des paquets ICMP pour tester si un hôte est joignable sur le réseau.",
+        code: "ping <hostname_or_IP>",
+        tags: ["ping", "network"],
+        highlight: [
+          { text: "ping", cls: "cmd-name" },
+          { text: " <hostname_or_IP>", cls: "arg" },
+        ]
+      },
+      {
+        emoji: "♻️",
+        label: "Redémarrer NetworkManager",
+        desc: "Redémarre le service réseau, utile après un changement de configuration.",
+        code: "sudo systemctl restart NetworkManager",
+        tags: ["network", "systemctl"],
+        highlight: [
+          { text: "sudo ", cls: "sudo-kw" },
+          { text: "systemctl", cls: "cmd-name" },
+          { text: " restart ", cls: "flag" },
+          { text: "NetworkManager", cls: "arg" },
+        ]
+      },
+    ]
+  },
+  {
+    section: "⚙️ Services système (systemctl)",
+    accent: "#e3b341",
+    commands: [
+      {
+        emoji: "📋",
+        label: "Voir le statut d'un service",
+        desc: "Affiche l'état actuel d'un service (actif, inactif, erreur) avec les derniers logs.",
+        code: "systemctl status <service_name>",
+        tags: ["systemctl", "service"],
+        highlight: [
+          { text: "systemctl", cls: "cmd-name" },
+          { text: " status ", cls: "flag" },
+          { text: "<service_name>", cls: "arg" },
+        ]
+      },
+      {
+        emoji: "▶️",
+        label: "Démarrer un service",
+        desc: "Lance un service immédiatement sans attendre le prochain démarrage.",
+        code: "sudo systemctl start <service_name>",
+        tags: ["systemctl", "service"],
+        highlight: [
+          { text: "sudo ", cls: "sudo-kw" },
+          { text: "systemctl", cls: "cmd-name" },
+          { text: " start ", cls: "flag" },
+          { text: "<service_name>", cls: "arg" },
+        ]
+      },
+      {
+        emoji: "⏹️",
+        label: "Arrêter un service",
+        desc: "Stoppe un service en cours d'exécution.",
+        code: "sudo systemctl stop <service_name>",
+        tags: ["systemctl", "service"],
+        highlight: [
+          { text: "sudo ", cls: "sudo-kw" },
+          { text: "systemctl", cls: "cmd-name" },
+          { text: " stop ", cls: "flag" },
+          { text: "<service_name>", cls: "arg" },
+        ]
+      },
+      {
+        emoji: "🔄",
+        label: "Redémarrer un service",
+        desc: "Arrête puis relance un service. Utile après avoir modifié sa configuration.",
+        code: "sudo systemctl restart <service_name>",
+        tags: ["systemctl", "service"],
+        highlight: [
+          { text: "sudo ", cls: "sudo-kw" },
+          { text: "systemctl", cls: "cmd-name" },
+          { text: " restart ", cls: "flag" },
+          { text: "<service_name>", cls: "arg" },
+        ]
+      },
+      {
+        emoji: "🚀",
+        label: "Activer au démarrage",
+        desc: "Active un service pour qu'il se lance automatiquement à chaque démarrage du système.",
+        code: "sudo systemctl enable <service_name>",
+        tags: ["systemctl", "boot"],
+        highlight: [
+          { text: "sudo ", cls: "sudo-kw" },
+          { text: "systemctl", cls: "cmd-name" },
+          { text: " enable ", cls: "flag" },
+          { text: "<service_name>", cls: "arg" },
+        ]
+      },
+      {
+        emoji: "⛔",
+        label: "Désactiver au démarrage",
+        desc: "Empêche un service de se lancer automatiquement au démarrage.",
+        code: "sudo systemctl disable <service_name>",
+        tags: ["systemctl", "boot"],
+        highlight: [
+          { text: "sudo ", cls: "sudo-kw" },
+          { text: "systemctl", cls: "cmd-name" },
+          { text: " disable ", cls: "flag" },
+          { text: "<service_name>", cls: "arg" },
+        ]
+      },
+      {
+        emoji: "❌",
+        label: "Voir les services en échec",
+        desc: "Liste tous les services systemd qui ont échoué au démarrage ou en cours d'exécution.",
+        code: "systemctl --failed",
+        tags: ["systemctl", "debug"],
+        highlight: [
+          { text: "systemctl", cls: "cmd-name" },
+          { text: " --failed", cls: "flag" },
+        ]
+      },
+    ]
+  },
+  {
+    section: "🐧 Kernel & Boot",
+    accent: "#f85149",
+    commands: [
+      {
+        emoji: "📜",
+        label: "Lister les kernels installés",
+        desc: "Affiche tous les fichiers kernel présents dans /boot.",
+        code: "ls /boot/vmlinuz*",
+        tags: ["kernel", "boot"],
+        highlight: [
+          { text: "ls", cls: "cmd-name" },
+          { text: " /boot/vmlinuz*", cls: "arg" },
+        ]
+      },
+      {
+        emoji: "🔄",
+        label: "Mettre à jour GRUB",
+        desc: "Régénère le fichier de configuration GRUB après avoir installé un nouveau kernel.",
+        code: "sudo grub-mkconfig -o /boot/grub/grub.cfg",
+        tags: ["grub", "boot"],
+        highlight: [
+          { text: "sudo ", cls: "sudo-kw" },
+          { text: "grub-mkconfig", cls: "cmd-name" },
+          { text: " -o ", cls: "flag" },
+          { text: "/boot/grub/grub.cfg", cls: "arg" },
+        ]
+      },
+      {
+        emoji: "📥",
+        label: "Installer un kernel LTS",
+        desc: "Installe le kernel Linux Long Term Support, plus stable pour un usage quotidien.",
+        code: "sudo pacman -S linux-lts",
+        tags: ["kernel", "pacman"],
+        highlight: [
+          { text: "sudo ", cls: "sudo-kw" },
+          { text: "pacman", cls: "cmd-name" },
+          { text: " -S ", cls: "flag" },
+          { text: "linux-lts", cls: "arg" },
+        ]
+      },
+    ]
+  },
+  {
+    section: "🚑 Dépannage & Logs",
+    accent: "#ff7b72",
+    commands: [
+      {
+        emoji: "🪵",
+        label: "Voir les logs système",
+        desc: "Affiche les journaux systemd en mode détaillé. -x ajoute du contexte, -e saute à la fin.",
+        code: "journalctl -xe",
+        tags: ["logs", "debug"],
+        highlight: [
+          { text: "journalctl", cls: "cmd-name" },
+          { text: " -xe", cls: "flag" },
+        ]
+      },
+      {
+        emoji: "🚀",
+        label: "Voir les logs de démarrage",
+        desc: "Affiche les messages du kernel au démarrage. Très utile pour diagnostiquer des problèmes hardware.",
+        code: "dmesg | less",
+        tags: ["logs", "boot", "debug"],
+        highlight: [
+          { text: "dmesg", cls: "cmd-name" },
+          { text: " | less", cls: "flag" },
+        ]
+      },
+      {
+        emoji: "⏱️",
+        label: "Analyser le temps de démarrage",
+        desc: "Liste les services qui ralentissent le démarrage du système, classés par durée.",
+        code: "systemd-analyze blame",
+        tags: ["systemd", "boot", "speed"],
+        highlight: [
+          { text: "systemd-analyze", cls: "cmd-name" },
+          { text: " blame", cls: "flag" },
+        ]
+      },
+      {
+        emoji: "🧹",
+        label: "Nettoyer les vieux logs",
+        desc: "Supprime tous les logs système de plus de 2 semaines pour gagner de la place.",
+        code: "sudo journalctl --vacuum-time=2weeks",
+        tags: ["logs", "clean"],
+        highlight: [
+          { text: "sudo ", cls: "sudo-kw" },
+          { text: "journalctl", cls: "cmd-name" },
+          { text: " --vacuum-time=2weeks", cls: "flag" },
+        ]
+      },
+    ]
+  },
+  {
+    section: "✨ Commandes pratiques",
+    accent: "#7ce38b",
+    commands: [
+      {
+        emoji: "🐧",
+        label: "Infos système (neofetch)",
+        desc: "Affiche les infos du système de manière stylisée dans le terminal (distro, kernel, RAM…).",
+        code: "neofetch",
+        tags: ["info", "system"],
+        highlight: [
+          { text: "neofetch", cls: "cmd-name" },
+        ]
+      },
+      {
+        emoji: "🌎",
+        label: "Générer une mirrorlist optimisée",
+        desc: "Sélectionne les 20 miroirs les plus rapides et les sauvegarde dans pacman.",
+        code: "sudo reflector --latest 20 --sort rate --save /etc/pacman.d/mirrorlist",
+        tags: ["reflector", "mirror", "pacman"],
+        highlight: [
+          { text: "sudo ", cls: "sudo-kw" },
+          { text: "reflector", cls: "cmd-name" },
+          { text: " --latest 20 --sort rate --save ", cls: "flag" },
+          { text: "/etc/pacman.d/mirrorlist", cls: "arg" },
+        ]
+      },
+      {
+        emoji: "✏️",
+        label: "Éditer la config pacman",
+        desc: "Ouvre le fichier de configuration principal de pacman dans nano pour le modifier.",
+        code: "sudo nano /etc/pacman.conf",
+        tags: ["pacman", "config", "nano"],
+        highlight: [
+          { text: "sudo ", cls: "sudo-kw" },
+          { text: "nano", cls: "cmd-name" },
+          { text: " /etc/pacman.conf", cls: "arg" },
+        ]
+      },
+    ]
+  },
+  {
+    section: "🦅 Garuda Linux — Outils & Optimisation",
+    accent: "#ff00ff",
+    commands: [
+      {
+        emoji: "🛠️",
+        label: "Garuda Assistant",
+        desc: "Interface graphique pour gérer les dépôts, les pilotes et les tâches de maintenance courantes.",
+        code: "garuda-assistant",
+        tags: ["garuda", "gui", "maintenance"],
+        highlight: [
+          { text: "garuda-assistant", cls: "cmd-name" },
+        ]
+      },
+      {
+        emoji: "🎮",
+        label: "Garuda Gamer",
+        desc: "Installez facilement tous les outils nécessaires au gaming (Steam, Wine, Proton, émulateurs...).",
+        code: "garuda-gamer",
+        tags: ["garuda", "gaming", "gui"],
+        highlight: [
+          { text: "garuda-gamer", cls: "cmd-name" },
+        ]
+      },
+      {
+        emoji: "⚙️",
+        label: "Garuda Settings Manager",
+        desc: "Gérez les noyaux (kernels), les pilotes matériels et la localisation du système.",
+        code: "garuda-settings-manager",
+        tags: ["garuda", "settings", "kernel"],
+        highlight: [
+          { text: "garuda-settings-manager", cls: "cmd-name" },
+        ]
+      },
+      {
+        emoji: "📸",
+        label: "Lister les snapshots BTRFS",
+        desc: "Affiche tous les points de restauration système créés automatiquement par Snapper.",
+        code: "snapper list",
+        tags: ["garuda", "btrfs", "snapshot"],
+        highlight: [
+          { text: "snapper", cls: "cmd-name" },
+          { text: " list", cls: "flag" },
+        ]
+      },
+      {
+        emoji: "🚑",
+        label: "Garuda Chroot",
+        desc: "Outil pour entrer dans un système endommagé depuis un Live USB afin de le réparer.",
+        code: "sudo garuda-chroot",
+        tags: ["garuda", "repair", "debug"],
+        highlight: [
+          { text: "sudo ", cls: "sudo-kw" },
+          { text: "garuda-chroot", cls: "cmd-name" },
+        ]
+      },
+      {
+        emoji: "🔥",
+        label: "Lancer FireDragon",
+        desc: "Lance le navigateur web par défaut de Garuda, optimisé pour la vie privée.",
+        code: "firedragon",
+        tags: ["garuda", "browser", "web"],
+        highlight: [
+          { text: "firedragon", cls: "cmd-name" },
+        ]
+      },
+      {
+        emoji: "📊",
+        label: "Infos partitions BTRFS",
+        desc: "Affiche les détails des partitions avec le système de fichiers BTRFS utilisé par Garuda.",
+        code: "lsblk -f",
+        tags: ["garuda", "btrfs", "disk"],
+        highlight: [
+          { text: "lsblk", cls: "cmd-name" },
+          { text: " -f", cls: "flag" },
+        ]
+      }
+    ]
+  }
+];
+
+function renderCode(cmd) {
+  if (!cmd.highlight) {
+    return cmd.code.split('\n').map(line =>
+      `<span class="prompt">$</span>${escHtml(line)}`
+    ).join('\n');
+  }
+  let out = `<span class="prompt">$</span>`;
+  for (const part of cmd.highlight) {
+    out += part.cls
+      ? `<span class="${part.cls}">${escHtml(part.text)}</span>`
+      : escHtml(part.text);
+  }
+  return out;
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function buildUI(filter = '') {
+  const main = document.getElementById('main');
+  const noRes = document.getElementById('noResults');
+  const q = filter.toLowerCase().trim();
+  let totalVisible = 0;
+
+  main.innerHTML = '';
+
+  data.forEach((section, si) => {
+    const visible = section.commands.filter(cmd =>
+      !q ||
+      cmd.label.toLowerCase().includes(q) ||
+      cmd.desc.toLowerCase().includes(q) ||
+      cmd.code.toLowerCase().includes(q) ||
+      cmd.tags.some(t => t.includes(q)) ||
+      section.section.toLowerCase().includes(q)
+    );
+    if (!visible.length) return;
+    totalVisible += visible.length;
+
+    const sec = document.createElement('div');
+    sec.className = 'section';
+    sec.style.animationDelay = `${si * 0.05}s`;
+
+    sec.innerHTML = `
+      <div class="section-header">
+        <span class="section-title">${section.section}</span>
+        <span class="section-count">${visible.length} commande${visible.length > 1 ? 's' : ''}</span>
+      </div>
+      <div class="cards" id="cards-${si}"></div>
+    `;
+    main.appendChild(sec);
+
+    const grid = sec.querySelector(`#cards-${si}`);
+
+    visible.forEach((cmd, ci) => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.style.setProperty('--card-accent', section.accent);
+      card.style.animationDelay = `${(si * 0.05) + (ci * 0.04)}s`;
+
+      card.innerHTML = `
+        <div class="card-top">
+          <span class="cmd-emoji">${cmd.emoji}</span>
+          <span class="cmd-label">${cmd.label}</span>
+        </div>
+        <p class="cmd-desc">${cmd.desc}</p>
+        <div class="code-block"><button class="copy-btn" data-code="${escHtml(cmd.code)}">copy</button>${renderCode(cmd)}</div>
+        <div class="tags">${cmd.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
+      `;
+      grid.appendChild(card);
+    });
+  });
+
+  if (totalVisible === 0) {
+    noRes.style.display = 'block';
+    main.style.display = 'none';
+  } else {
+    noRes.style.display = 'none';
+    main.style.display = '';
+  }
+}
+
+// Copy buttons
+document.addEventListener('click', e => {
+  if (e.target.classList.contains('copy-btn')) {
+    const code = e.target.dataset.code;
+    navigator.clipboard.writeText(code).then(() => {
+      e.target.textContent = '✓';
+      e.target.classList.add('copied');
+      setTimeout(() => {
+        e.target.textContent = 'copy';
+        e.target.classList.remove('copied');
+      }, 1500);
+    });
+  }
+});
+
+// Search
+const searchEl = document.getElementById('search');
+let debounce;
+searchEl.addEventListener('input', () => {
+  clearTimeout(debounce);
+  debounce = setTimeout(() => buildUI(searchEl.value), 120);
+});
+
+// Initial Render
+buildUI();
+</script>
+</body>
+</html>
